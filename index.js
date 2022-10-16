@@ -1,6 +1,5 @@
 const { prompt } = require("inquirer");
 const mysql = require("mysql2");
-require("console.table");
 
 const db = mysql
   .createConnection(
@@ -41,6 +40,9 @@ const mainMenu = async () => {
     case "VIEW_EMPLOYEES":
       viewEmployees();
       break;
+    case "VIEW_DEPARTMENTS":
+      viewDepartments();
+      break;
     case "EXIT":
       process.exit();
     default:
@@ -51,6 +53,12 @@ const mainMenu = async () => {
 const viewEmployees = async () => {
   const [employeeData] = await db.query(`SELECT * FROM employee`);
   console.table(employeeData);
+  mainMenu();
+};
+
+const viewDepartments = async () => {
+  const [departmentData] = await db.query(`SELECT * FROM department`);
+  console.table(departmentData);
   mainMenu();
 };
 
