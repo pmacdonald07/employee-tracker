@@ -50,6 +50,10 @@ const mainMenu = async () => {
           value: "UPDATE_ROLE",
         },
         {
+          name: "Update an Employee's Manager",
+          value: "UPDATE_MANAGER",
+        },
+        {
           name: "Exit",
           value: "EXIT",
         },
@@ -79,6 +83,9 @@ const mainMenu = async () => {
     case "UPDATE_ROLE":
       updateRole();
       break;
+    case "UPDATE_MANAGER":
+      updateManager();
+      break;
     case "EXIT":
       process.exit();
     default:
@@ -88,14 +95,14 @@ const mainMenu = async () => {
 
 const viewEmployees = async () => {
   const [employeeData] = await db.query(
-    `SELECT employee.id, 
-    employee.first_name, 
-    employee.last_name, 
-    role.title AS job_title, 
-    department.name AS department, 
-    role.salary, 
-    CONCAT (manager.first_name, " ", manager.last_name) AS manager 
-    FROM employee 
+    `SELECT employee.id,
+    employee.first_name,
+    employee.last_name,
+    role.title AS job_title,
+    department.name AS department,
+    role.salary,
+    CONCAT (manager.first_name, " ", manager.last_name) AS manager
+    FROM employee
     LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id`
   );
   console.table(employeeData);
@@ -256,6 +263,35 @@ const updateRole = async () => {
   });
 
   console.log("Employee's role was updated successfully!");
+  mainMenu();
+};
+
+const updateManager = async () => {
+  const [employeeData] = await db.query(`SELECT * FROM employee`);
+  console.table(employeeData);
+  const promptValue = await inquirer.prompt([
+    {
+      type: "int",
+      name: "employee_id",
+      message: "What is the employee id of the employee you want to update?",
+    },
+    {
+      type: "int",
+      name: "manager_id",
+      message: "What is the employee id of the employee's new manager?",
+    },
+  ]);
+  const sql = `UPDATE employee SET manager_id=? WHERE id=?`;
+  const params = [promptValue.manager_id, promptValue.employee_id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+  });
+
+  console.log("Employee's manager was updated successfully!");
   mainMenu();
 };
 
