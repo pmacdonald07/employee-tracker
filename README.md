@@ -23,7 +23,8 @@
   ![Screenshot (85)](https://user-images.githubusercontent.com/108894754/196820010-11ee329d-8dae-4076-8f77-eaa460425eb3.png)
 
   ## Usage
-  Using this project could help a user organize information about their company or employees. To use this application after installing the dependencies, a user would need to type "npm start" in the terminal to launch the application. Once the application is running, a user will be able to choose from a series of prompts to view information in the employee MySQL table. They will see the following:
+  Using this project could help a user organize information about their company or employees. To use this application after installing the dependencies, a user would need to open a mysql shell and run the commands "source db/schema.sql" and "source db/seeds.sql" to create and seed the employee database.
+  Once the database is set up, the user would need to type "npm start" in the terminal to launch the application. Once the application is running, a user will be able to choose from a series of prompts to view information in the employee MySQL table. They will see the following:
 
   ![Screenshot (86)](https://user-images.githubusercontent.com/108894754/196820483-1e568919-0518-4908-88a5-f350a448a6e2.png)
 
