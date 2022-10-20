@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-//require("console.table");
 
 const db = mysql
   .createConnection(
@@ -15,6 +14,7 @@ const db = mysql
   .promise();
 
 const mainMenu = async () => {
+  console.log("Hello! Welcome to EMPLOYEE TRACKER!");
   const { choice } = await inquirer.prompt([
     {
       type: "list",
@@ -32,6 +32,14 @@ const mainMenu = async () => {
         {
           name: "View All Employees",
           value: "VIEW_EMPLOYEES",
+        },
+        {
+          name: "View All Employees by Manager",
+          value: "VIEW_EMP_BY_MANAGER",
+        },
+        {
+          name: "View All Employees by Department",
+          value: "VIEW_EMP_BY_DEPARTMENT",
         },
         {
           name: "Add a Department",
@@ -65,6 +73,12 @@ const mainMenu = async () => {
     case "VIEW_EMPLOYEES":
       viewEmployees();
       break;
+    case "VIEW_EMP_BY_MANAGER":
+      viewEmpByManager();
+      break;
+    case "VIEW_EMP_BY_DEPARTMENT":
+      viewEmpByDepartment();
+      break;
     case "VIEW_DEPARTMENTS":
       viewDepartments();
       break;
@@ -96,14 +110,50 @@ const mainMenu = async () => {
 const viewEmployees = async () => {
   const [employeeData] = await db.query(
     `SELECT employee.id,
-    employee.first_name,
-    employee.last_name,
-    role.title AS job_title,
-    department.name AS department,
-    role.salary,
-    CONCAT (manager.first_name, " ", manager.last_name) AS manager
-    FROM employee
-    LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id`
+      employee.first_name,
+      employee.last_name,
+      role.title AS job_title,
+      department.name AS department,
+      role.salary,
+      CONCAT (manager.first_name, " ", manager.last_name) AS manager
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id`
+  );
+  console.table(employeeData);
+  mainMenu();
+};
+
+const viewEmpByManager = async () => {
+  const [employeeData] = await db.query(
+    `SELECT
+      CONCAT (manager.first_name, " ", manager.last_name) AS manager,
+      employee.id,
+      employee.first_name,
+      employee.last_name,
+      role.title AS job_title,
+      department.name AS department,
+      role.salary
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id
+      ORDER BY manager`
+  );
+  console.table(employeeData);
+  mainMenu();
+};
+
+const viewEmpByDepartment = async () => {
+  const [employeeData] = await db.query(
+    `SELECT
+      department.name AS department,
+      employee.id,
+      employee.first_name,
+      employee.last_name,
+      role.title AS job_title,
+      role.salary,
+      CONCAT (manager.first_name, " ", manager.last_name) AS manager
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id
+      ORDER BY department`
   );
   console.table(employeeData);
   mainMenu();
